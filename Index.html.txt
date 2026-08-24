@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Kurotsume — Scheda Interattiva</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+h2 {
+    margin-top: 0;
+}
+input[type="number"], input[type="text"] {
+    width: 60px;
+}
+.pallini {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+.pallini div {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #444;
+    cursor: pointer;
+}
+.pallini div.attivo {
+    background: #444;
+}
+.reset-btn {
+    margin-top: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #0077cc;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ============================
+     COLONNA SINISTRA
+=============================== -->
+<div>
+
+<div class="box">
+<h2>Caratteristiche</h2>
+Forza: <input type="number" id="for" value="18"><br>
+Destrezza: <input type="number" id="des" value="12"><br>
+Costituzione: <input type="number" id="cos" value="18"><br>
+Intelligenza: <input type="number" id="int" value="8"><br>
+Saggezza: <input type="number" id="sag" value="10"><br>
+Carisma: <input type="number" id="car" value="16"><br><br>
+
+Bonus Competenza: <input type="number" id="bc" value="4"><br><br>
+
+<strong>Modificatori:</strong><br>
+For: <span id="modFor"></span><br>
+Des: <span id="modDes"></span><br>
+Cos: <span id="modCos"></span><br>
+Car: <span id="modCar"></span><br><br>
+
+<strong>CA:</strong> <span id="ca"></span><br>
+<strong>Iniziativa:</strong> <span id="init"></span><br>
+<strong>CD Incantesimi:</strong> <span id="cdSpell"></span><br>
+<strong>Attacco Incantesimi:</strong> <span id="atkSpell"></span><br>
+<strong>Attacco Katana:</strong> <span id="atkKatana"></span><br>
+<strong>Danni Katana:</strong> <span id="dmgKatana"></span><br>
+</div>
+
+</div>
+
+<!-- ============================
+     COLONNA DESTRA
+=============================== -->
+<div>
+
+<div class="box">
+<h2>Risorse & Abilità</h2>
+
+<!-- Funzione generica per creare pallini -->
+<script>
+function creaPallini(id, n) {
+    let c = document.getElementById(id);
+    c.innerHTML = "";
+    for (let i = 0; i < n; i++) {
+        let p = document.createElement("div");
+        p.className = localStorage.getItem(id+"_"+i) === "1" ? "attivo" : "";
+        p.onclick = () => {
+            p.classList.toggle("attivo");
+            localStorage.setItem(id+"_"+i, p.classList.contains("attivo") ? "1" : "0");
+        };
+        c.appendChild(p);
+    }
+}
+</script>
+
+<!-- Abilità -->
+<strong>Second Wind (Recupera Energie)</strong><br>
+<div id="sw" class="pallini"></div>
+<div class="reset-btn" onclick="reset('sw',1)">Reset</div>
+
+<strong>Azione Impetuosa</strong><br>
+<div id="ai" class="pallini"></div>
+<div class="reset-btn" onclick="reset('ai',1)">Reset</div>
+
+<strong>Indomito</strong><br>
+<div id="ind" class="pallini"></div>
+<div class="reset-btn" onclick="reset('ind',1)">Reset</div>
+
+<strong>Teletrasporto Shadar-Kai</strong><br>
+<div id="tp" class="pallini"></div>
+<div class="reset-btn" onclick="reset('tp',3)">Reset</div>
+
+<strong>Dadi Superiorità (4d8)</strong><br>
+<div id="ds" class="pallini"></div>
+<div class="reset-btn" onclick="reset('ds',4)">Reset</div>
+
+<script>
+function reset(id,n){
+    for(let i=0;i<n;i++){
+        localStorage.setItem(id+"_"+i,"0");
+    }
+    creaPallini(id,n);
+}
+</script>
+
+<script>
+creaPallini("sw",1);
+creaPallini("ai",1);
+creaPallini("ind",1);
+creaPallini("tp",3);
+creaPallini("ds",4);
+</script>
+
+</div>
+
+<div class="box">
+<h2>Manovre</h2>
+
+<strong>Attacco Preciso</strong><br>
+<small>Usi 1 dado per aggiungere 1d8 al tiro per colpire.</small><br><br>
+
+<strong>Attacco Sbilanciante</strong><br>
+<small>Colpisci → aggiungi 1d8 ai danni → TS Forza CD 16 → prono.</small><br><br>
+
+<strong>Attacco Disarmante</strong><br>
+<small>Colpisci → aggiungi 1d8 ai danni → TS Forza CD 16 → lascia oggetto.</small><br><br>
+
+<strong>Attacco Minaccioso</strong><br>
+<small>Colpisci → aggiungi 1d8 ai danni → TS Saggezza CD 16 → spaventato.</small><br><br>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+// ===============================
+// CALCOLI AUTOMATICI
+// ===============================
+function calc() {
+    let f = parseInt(for.value);
+    let d = parseInt(des.value);
+    let c = parseInt(cos.value);
+    let ca = parseInt(car.value);
+    let bcVal = parseInt(bc.value);
+
+    let modF = Math.floor((f-10)/2);
+    let modD = Math.floor((d-10)/2);
+    let modC = Math.floor((c-10)/2);
+    let modCa = Math.floor((ca-10)/2);
+
+    modFor.innerText = modF;
+    modDes.innerText = modD;
+    modCos.innerText = modC;
+    modCar.innerText = modCa;
+
+    // CA = armatura completa +1 (18) + Des (max 2)
+    ca.innerText = 18 + modD;
+
+    init.innerText = modD;
+
+    cdSpell.innerText = 8 + bcVal + modCa;
+    atkSpell.innerText = bcVal + modCa;
+
+    atkKatana.innerText = modF + bcVal + 3; // arma +3
+    dmgKatana.innerText = "1d8+" + (modF + 3 + 2); // duellante +2
+}
+
+document.querySelectorAll("input").forEach(i => {
+    i.oninput = () => {
+        localStorage.setItem(i.id, i.value);
+        calc();
+    };
+});
+
+// Carica dati salvati
+window.onload = () => {
+    document.querySelectorAll("input").forEach(i => {
+        if(localStorage.getItem(i.id)) i.value = localStorage.getItem(i.id);
+    });
+    calc();
+};
+</script>
+
+</body>
+</html>
