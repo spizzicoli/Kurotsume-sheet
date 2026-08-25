@@ -1,0 +1,1172 @@
+// =========================================================
+// Kurotsume — Scheda del Personaggio — stili globali
+// Palette: piano d'ombra (inchiostro), acciaio, oro, sangue rituale
+// =========================================================
+
+$ink: #0e1017;
+$ink-panel: #171a26;
+$ink-panel-alt: #1d2233;
+$ink-raised: #232a3f;
+$steel: #5c85ab;
+$steel-dim: #3a5170;
+$gold: #c9a227;
+$gold-bright: #e3bd52;
+$blood: #8c2a3a;
+$blood-bright: #c1465a;
+$parchment: #ece7da;
+$parchment-dim: #a9a898;
+$line: rgba(201, 162, 39, 0.18);
+$line-strong: rgba(201, 162, 39, 0.35);
+
+$font-display: 'Cinzel', serif;
+$font-body: 'EB Garamond', Georgia, serif;
+
+@mixin plaque-corners {
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border: 1px solid $gold;
+    opacity: 0.7;
+  }
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+  }
+  &::after {
+    top: -1px;
+    right: -1px;
+    border-left: none;
+    border-bottom: none;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(ellipse at top, #171b2b 0%, $ink 55%, #08090d 100%);
+  background-attachment: fixed;
+  color: $parchment;
+  font-family: $font-body;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: $blood-bright;
+  color: $parchment;
+}
+
+// scrollbar (webkit)
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: $ink;
+}
+::-webkit-scrollbar-thumb {
+  background: $steel-dim;
+  border-radius: 6px;
+}
+
+.sheet-app {
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+
+// -----------------------------------------------------------
+// HEADER
+// -----------------------------------------------------------
+.char-header {
+  position: relative;
+  padding: 28px 24px 44px;
+  background:
+    linear-gradient(160deg, rgba(140, 42, 58, 0.18), rgba(92, 133, 171, 0.1) 55%, transparent 80%),
+    linear-gradient(180deg, #14172380 0%, $ink 100%);
+  border-bottom: 1px solid $line-strong;
+  overflow: hidden;
+
+  &::after {
+    // bordo "stracciato" ispirato alla lama spezzata / seta lacerata del clan
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 18px;
+    background: $ink;
+    clip-path: polygon(
+      0% 0%, 4% 100%, 9% 15%, 14% 100%, 19% 20%, 25% 100%, 31% 10%, 37% 100%,
+      43% 25%, 49% 100%, 55% 5%, 61% 100%, 67% 18%, 73% 100%, 79% 8%, 85% 100%,
+      91% 22%, 97% 100%, 100% 0%
+    );
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  &__portrait-frame {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    padding: 4px;
+    background: conic-gradient(from 210deg, $gold, $blood-bright, $steel, $gold);
+    box-shadow: 0 0 0 1px $ink, 0 0 26px rgba(140, 42, 58, 0.45), 0 0 0 8px rgba(201, 162, 39, 0.06);
+
+    @media (min-width: 600px) {
+      width: 148px;
+      height: 148px;
+    }
+  }
+
+  &__portrait {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 3px solid $ink;
+  }
+
+  &__name {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    letter-spacing: 0.03em;
+    color: $parchment;
+    margin: 0 0 2px;
+    text-shadow: 0 0 24px rgba(140, 42, 58, 0.35);
+  }
+
+  &__subline {
+    color: $parchment-dim;
+    font-size: 1.05rem;
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 26px;
+    margin-bottom: 10px;
+  }
+
+  &__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 1rem;
+  }
+
+  &__meta-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $gold;
+    opacity: 0.85;
+  }
+
+  &__inspiration {
+    color: $parchment-dim;
+    margin-left: -8px;
+    .MuiFormControlLabel-label {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// EDITABLE FIELDS
+// -----------------------------------------------------------
+.editable-field {
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.15s, color 0.15s;
+  color: inherit;
+  &:hover {
+    border-bottom-color: $line-strong;
+    color: $gold-bright;
+  }
+}
+
+.editable-stat {
+  cursor: text;
+  display: inline-block;
+  &:hover {
+    color: $gold-bright;
+  }
+}
+
+// -----------------------------------------------------------
+// SECTION CARD (contenitore comune)
+// -----------------------------------------------------------
+.section-card {
+  background: linear-gradient(175deg, $ink-panel-alt, $ink-panel 70%);
+  border: 1px solid $line;
+  border-radius: 8px;
+  padding: 16px 18px 20px;
+  margin-bottom: 18px;
+  position: relative;
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid $line;
+    position: relative;
+  }
+
+  &__title {
+    position: relative;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    color: $gold-bright;
+    text-transform: uppercase;
+    padding-left: 2px;
+  }
+
+  &--large {
+    .section-card__title {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// GRID LAYOUT
+// -----------------------------------------------------------
+.sheet-grid-container {
+  padding-top: 22px;
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sheet-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: stretch;
+
+  > * {
+    height: 100%;
+  }
+
+  @media (min-width: 900px) {
+    &--three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    &--two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &--single {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// ABILITY SCORES
+// -----------------------------------------------------------
+.ability-scores__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ability-card {
+  position: relative;
+  border: 1px solid $line;
+  border-radius: 10px;
+  padding: 10px 6px 8px;
+  text-align: center;
+  background: $ink-raised;
+  @include plaque-corners;
+
+  &__label {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $parchment-dim;
+  }
+
+  &__mod {
+    font-family: $font-display;
+    font-size: 1.6rem;
+    color: $steel;
+    line-height: 1.1;
+    margin: 2px 0;
+  }
+
+  &__score {
+    font-size: 1.05rem;
+    color: $gold-bright;
+    font-weight: 600;
+  }
+
+  &__short {
+    font-size: 0.6rem;
+    color: $parchment-dim;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+}
+
+// -----------------------------------------------------------
+// SAVING THROWS + PASSIVES
+// -----------------------------------------------------------
+.saves-panel__prof {
+  font-size: 0.85rem;
+  color: $parchment-dim;
+  margin-bottom: 10px;
+  strong {
+    color: $gold-bright;
+  }
+}
+
+.saves-list__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.saves-list__value {
+  width: 34px;
+  font-weight: 600;
+  color: $steel;
+}
+
+.saves-list__label {
+  color: $parchment;
+}
+
+.passives {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid $line;
+}
+
+.passives__row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.passives__value {
+  font-family: $font-display;
+  color: $gold-bright;
+  min-width: 24px;
+  font-size: 1.05rem;
+}
+
+.passives__label {
+  color: $parchment-dim;
+  font-size: 0.85rem;
+}
+
+// -----------------------------------------------------------
+// SKILLS PANEL (ingrandito)
+// -----------------------------------------------------------
+.skills-panel {
+  &__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+
+    @media (min-width: 560px) {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 18px;
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    transition: background 0.15s;
+
+    &.is-proficient {
+      background: rgba(201, 162, 39, 0.06);
+    }
+    &:hover {
+      background: rgba(92, 133, 171, 0.08);
+    }
+  }
+
+  &__value {
+    width: 30px;
+    font-weight: 600;
+    color: $steel;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    flex: 1;
+    font-size: 0.96rem;
+  }
+
+  &__ability {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: $parchment-dim;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+}
+
+// -----------------------------------------------------------
+// COMBAT STATS
+// -----------------------------------------------------------
+.combat-top {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.combat-stat {
+  flex: 1;
+  text-align: center;
+  border: 1px solid $line;
+  border-radius: 10px;
+  padding: 10px 6px;
+  background: $ink-raised;
+  position: relative;
+  @include plaque-corners;
+
+  &__value {
+    font-family: $font-display;
+    font-size: 2rem;
+    color: $gold-bright;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $parchment-dim;
+    margin-top: 4px;
+  }
+
+  &__hint {
+    margin-top: 4px;
+    font-size: 0.68rem;
+    color: $steel;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+
+    .editable-field {
+      color: $steel;
+      font-weight: 600;
+    }
+  }
+
+  &--ac .combat-stat__value {
+    color: $steel;
+  }
+}
+
+.hp-block {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  &__row {
+    flex: 1;
+    text-align: center;
+    background: $ink-raised;
+    border: 1px solid $line;
+    border-radius: 8px;
+    padding: 8px 4px;
+
+    span {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $parchment-dim;
+      margin-bottom: 2px;
+    }
+
+    .editable-stat {
+      font-family: $font-display;
+      font-size: 1.3rem;
+      color: $blood-bright;
+    }
+  }
+}
+
+.hit-dice {
+  &__title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $gold;
+    margin-bottom: 6px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    color: $parchment-dim;
+  }
+}
+
+// -----------------------------------------------------------
+// ATTACKS
+// -----------------------------------------------------------
+.attack-card {
+  border: 1px solid $line;
+  border-left: 3px solid $blood;
+  border-radius: 6px;
+  padding: 9px 10px 10px;
+  margin-bottom: 10px;
+  background: $ink-raised;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    .editable-field {
+      font-weight: 600;
+      color: $parchment;
+      flex: 1;
+    }
+  }
+
+  &__bonus {
+    font-family: $font-display;
+    color: $gold-bright;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    font-size: 0.85rem;
+
+    span {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $parchment-dim;
+    }
+  }
+
+  &__select {
+    height: 30px;
+    font-size: 0.85rem;
+    color: $parchment;
+
+    .MuiSelect-select {
+      padding: 2px 24px 2px 8px;
+    }
+  }
+
+  &__damage {
+    font-size: 0.88rem;
+    color: $steel;
+    margin: 2px 0 6px;
+  }
+
+  &__tags {
+    margin-bottom: 4px;
+    .editable-field {
+      font-size: 0.78rem;
+      color: $parchment-dim;
+    }
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  &__chip {
+    background: rgba(92, 133, 171, 0.14) !important;
+    color: $parchment-dim !important;
+    height: 20px !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+.attacks-panel__add-btn {
+  margin-top: 6px !important;
+  color: $gold-bright !important;
+}
+
+// -----------------------------------------------------------
+// FEATURES PANEL (ingrandito)
+// -----------------------------------------------------------
+.features-panel {
+  &__columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 24px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__half {
+    min-width: 0;
+  }
+}
+
+.features-col {
+  &__title {
+    font-family: $font-display;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: $steel;
+    text-transform: uppercase;
+    margin: 14px 0 8px;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  &__add-btn {
+    margin-top: 4px !important;
+    margin-bottom: 14px !important;
+    color: $gold-bright !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+.features-divider {
+  border-color: $line !important;
+  margin: 6px 0 14px !important;
+}
+
+.feature-row {
+  padding: 9px 8px;
+  margin-bottom: 6px;
+  border: 1px solid $line;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.015);
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: $parchment;
+
+    .editable-field {
+      display: block;
+    }
+  }
+
+  &__remove {
+    flex-shrink: 0;
+    margin-top: -4px;
+    opacity: 0.55;
+    &:hover {
+      opacity: 1;
+      color: $blood-bright;
+    }
+  }
+
+  &__desc {
+    font-size: 0.82rem;
+    color: $parchment-dim;
+    margin-top: 3px;
+    line-height: 1.4;
+
+    .editable-field {
+      display: block;
+    }
+  }
+
+  &__usage {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  &__usage-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $gold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .editable-field {
+      color: $gold-bright;
+      font-weight: 600;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// USAGE TRACKER (pallini utilizzi)
+// -----------------------------------------------------------
+.usage-tracker {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+
+  &__dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1.5px solid $gold;
+    display: inline-block;
+    cursor: pointer;
+    transition: background 0.12s, box-shadow 0.12s;
+
+    &.is-filled {
+      background: $gold;
+      box-shadow: 0 0 6px rgba(227, 189, 82, 0.7);
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.3);
+    }
+  }
+
+  &--small .usage-tracker__dot {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// -----------------------------------------------------------
+// SPELLS PANEL
+// -----------------------------------------------------------
+.spells-panel {
+  &__header {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  &__stat {
+    flex: 1;
+    text-align: center;
+    background: $ink-raised;
+    border: 1px solid $line;
+    border-radius: 8px;
+    padding: 8px 4px;
+
+    &-value {
+      display: block;
+      font-family: $font-display;
+      font-size: 1.4rem;
+      color: $blood-bright;
+    }
+
+    &-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $parchment-dim;
+    }
+  }
+
+  &__footnote {
+    font-size: 0.72rem;
+    color: $parchment-dim;
+    margin-top: 6px;
+    font-style: italic;
+  }
+}
+
+.spells-group {
+  margin-bottom: 16px;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid $line;
+  }
+
+  &__title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $gold;
+  }
+
+  &__slot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__slot-count {
+    font-size: 0.68rem;
+    color: $parchment-dim;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    .editable-field {
+      color: $steel;
+      font-weight: 600;
+    }
+  }
+}
+
+.spells-panel__add-btn {
+  margin-top: 6px !important;
+  color: $gold-bright !important;
+}
+
+.spell-card {
+  border: 1px solid $line;
+  border-left: 3px solid $steel;
+  border-radius: 6px;
+  padding: 9px 10px 10px;
+  margin-bottom: 10px;
+  background: $ink-raised;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  &__name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: $parchment;
+
+    .editable-field {
+      display: block;
+    }
+  }
+
+  &__talent-chip {
+    background: rgba(140, 42, 58, 0.22) !important;
+    color: $gold-bright !important;
+    height: 18px !important;
+    font-size: 0.62rem !important;
+  }
+
+  &__level {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: $parchment-dim;
+    flex-shrink: 0;
+
+    .editable-field {
+      color: $steel;
+      font-weight: 600;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+    margin-bottom: 8px;
+
+    @media (min-width: 420px) and (max-width: 899px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    font-size: 0.85rem;
+  }
+
+  &__field-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $parchment-dim;
+  }
+
+  &__effect {
+    font-size: 0.83rem;
+    line-height: 1.4;
+    color: $parchment;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .editable-field {
+      display: block;
+      color: $parchment;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// INVENTORY
+// -----------------------------------------------------------
+.inventory-panel {
+  &__capacity-text {
+    font-size: 0.92rem;
+    margin-bottom: 6px;
+    color: $parchment-dim;
+
+    .is-over {
+      color: $blood-bright;
+      font-weight: 700;
+    }
+  }
+
+  &__bar {
+    height: 10px !important;
+    border-radius: 6px;
+    background: $ink-raised !important;
+
+    .MuiLinearProgress-bar {
+      background: linear-gradient(90deg, $steel, $gold) !important;
+    }
+
+    &.is-over .MuiLinearProgress-bar {
+      background: linear-gradient(90deg, $blood, $blood-bright) !important;
+    }
+  }
+
+  &__warning {
+    color: $blood-bright;
+    font-size: 0.8rem;
+    margin-top: 6px;
+  }
+
+  &__add-btn {
+    margin-top: 8px !important;
+    color: $gold-bright !important;
+  }
+}
+
+.inventory-list {
+  margin-top: 16px;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 2fr 0.8fr 0.6fr 0.6fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 2px;
+    font-size: 0.9rem;
+
+    &--head {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $gold;
+      border-bottom: 1px solid $line-strong;
+      padding-bottom: 6px;
+    }
+
+    &--new {
+      .MuiInputBase-root {
+        font-size: 0.85rem;
+      }
+      margin-top: 4px;
+    }
+  }
+
+  &__total {
+    color: $steel;
+    font-weight: 600;
+  }
+}
+
+.inventory-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+
+  &__desc {
+    padding: 0 2px 6px 2px;
+    font-size: 0.78rem;
+    color: $parchment-dim;
+    font-style: italic;
+
+    .editable-field {
+      display: block;
+    }
+  }
+}
+
+// -----------------------------------------------------------
+// BACKGROUND / TRAITS
+// -----------------------------------------------------------
+.background-panel {
+  &__name {
+    font-family: $font-display;
+    color: $gold-bright;
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+  }
+
+  &__text {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: $parchment;
+    margin-bottom: 14px;
+  }
+}
+
+.traits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.traits-grid__item {
+  background: $ink-raised;
+  border: 1px solid $line;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.traits-grid__label {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: $gold;
+  margin-bottom: 3px;
+}
+
+// -----------------------------------------------------------
+// NOTES
+// -----------------------------------------------------------
+.notes-list__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 0.92rem;
+}
+
+.notes-list__bullet {
+  color: $blood-bright;
+  font-weight: 700;
+}
+
+.notes-panel__add-btn {
+  margin-top: 8px !important;
+  color: $gold-bright !important;
+}
+
+// -----------------------------------------------------------
+// FOOTER
+// -----------------------------------------------------------
+.sheet-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  padding: 12px 4px 30px;
+  flex-wrap: wrap;
+
+  &__hint {
+    font-size: 0.78rem;
+    color: $parchment-dim;
+    font-style: italic;
+  }
+}
+
+// -----------------------------------------------------------
+// RESPONSIVE FINE-TUNING
+// -----------------------------------------------------------
+@media (max-width: 599px) {
+  .char-header {
+    padding: 20px 14px 36px;
+    text-align: center;
+
+    &__inner {
+      text-align: center;
+    }
+    &__meta,
+    &__inspiration {
+      justify-content: center;
+    }
+  }
+
+  .section-card {
+    padding: 12px 12px 16px;
+  }
+
+  .inventory-list__row {
+    grid-template-columns: 1.6fr 0.7fr 0.5fr 0.5fr auto;
+    font-size: 0.8rem;
+  }
+}
