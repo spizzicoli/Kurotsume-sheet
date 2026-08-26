@@ -7,12 +7,83 @@ import useDerived from '../hooks/useDerived'
 import { newId } from '../utils/dnd'
 import EditableField from './EditableField'
 import SectionCard from './SectionCard'
+import ConfirmDeleteDialog from './ConfirmDeleteDialog'
+
+function InventoryRow({ item, index, onUpdate, onRemove, onMove }) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const itemLabel = item.nome?.trim() || 'Questo oggetto'
+
+  return (
+    <>
+      <Box
+        className="inventory-item"
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.effectAllowed = 'move'
+          e.dataTransfer.setData('text/plain', String(index))
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault()
+          const fromIndex = Number(e.dataTransfer.getData('text/plain'))
+          if (!Number.isNaN(fromIndex) && fromIndex !== index) onMove(fromIndex, index)
+        }}
+      >
+        <Box className="inventory-list__row">
+          <EditableField
+            value={item.nome}
+            onChange={(v) => onUpdate(item.id, 'nome', v)}
+            fullWidth
+          />
+          <EditableField
+            value={item.peso}
+            onChange={(v) => onUpdate(item.id, 'peso', Number(v) || 0)}
+            type="number"
+          />
+          <EditableField
+            value={item.quantita}
+            onChange={(v) => onUpdate(item.id, 'quantita', Number(v) || 0)}
+            type="number"
+          />
+          <span className="inventory-list__total">
+            {((Number(item.peso) || 0) * (Number(item.quantita) || 0)).toFixed(2)}
+          </span>
+          <IconButton size="small" onClick={() => setConfirmOpen(true)} aria-label="Rimuovi oggetto">
+            <DeleteOutlineIcon fontSize="small" />
+          </IconButton>
+        </Box>
+        <Box className="inventory-item__desc">
+          <EditableField
+            value={item.descrizione || ''}
+            onChange={(v) => onUpdate(item.id, 'descrizione', v)}
+            multiline
+            fullWidth
+            placeholder="Aggiungi una descrizione…"
+          />
+        </Box>
+      </Box>
+
+      <ConfirmDeleteDialog
+        open={confirmOpen}
+        title="Eliminare l'oggetto?"
+        itemName={itemLabel}
+        description={`Stai per rimuovere "${itemLabel}" dall'inventario. Vuoi procedere?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          onRemove(item.id)
+          setConfirmOpen(false)
+        }}
+      />
+    </>
+  )
+}
 
 export default function Inventory() {
   const c = useCharacter()
   const dispatch = useCharacterDispatch()
   const { carryCurrent, carryMax, liftMax } = useDerived()
   const [nuovo, setNuovo] = useState({ nome: '', peso: '', quantita: 1 })
+  const [customOrder, setCustomOrder] = useState(() => c.inventory.map((item) => item.id))
   const coinLabels = { MR: 'Rame', MA: 'Argento', MO: 'Oro', MP: 'Platino' }
 
   const percent = carryMax > 0 ? Math.min(100, (carryCurrent / carryMax) * 100) : 0
@@ -23,19 +94,64 @@ export default function Inventory() {
     dispatch({ type: 'SET_PATH', path: ['inventory'], value: next })
   }
 
-  const removeItem = (id) => dispatch({ type: 'REMOVE_INVENTORY_ITEM', id })
+  const moveItem = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return
+    const next = [...c.inventory]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    const nextOrder = next.map((item) => item.id)
+    setCustomOrder(nextOrder)
+    dispatch({ type: 'SET_PATH', path: ['inventory'], value: next })
+  }
+
+  const sortInventoryAlphabetically = () => {
+    const next = [...c.inventory].sort((a, b) =>
+      (a.nome || '').localeCompare(b.nome || '', undefined, { sensitivity: 'base' })
+    )
+    dispatch({ type: 'SET_PATH', path: ['inventory'], value: next })
+  }
+
+  const sortInventoryByWeight = () => {
+    const next = [...c.inventory].sort((a, b) => {
+      const weightA = Number(a.peso) || 0
+      const weightB = Number(b.peso) || 0
+      if (weightA === weightB) {
+        return (a.nome || '').localeCompare(b.nome || '', undefined, { sensitivity: 'base' })
+      }
+      return weightB - weightA
+    })
+    dispatch({ type: 'SET_PATH', path: ['inventory'], value: next })
+  }
+
+  const sortInventoryCustom = () => {
+    if (!customOrder.length) return
+    const byId = new Map(c.inventory.map((item) => [item.id, item]))
+    const next = customOrder
+      .map((id) => byId.get(id))
+      .filter(Boolean)
+    const missing = c.inventory.filter((item) => !customOrder.includes(item.id))
+    dispatch({ type: 'SET_PATH', path: ['inventory'], value: [...next, ...missing] })
+  }
+
+  const removeItem = (id) => {
+    const nextOrder = customOrder.filter((itemId) => itemId !== id)
+    setCustomOrder(nextOrder)
+    dispatch({ type: 'REMOVE_INVENTORY_ITEM', id })
+  }
 
   const addItem = () => {
     if (!nuovo.nome.trim()) return
+    const item = {
+      id: newId('item'),
+      nome: nuovo.nome.trim(),
+      descrizione: '',
+      peso: Number(nuovo.peso) || 0,
+      quantita: Number(nuovo.quantita) || 1
+    }
+    setCustomOrder((prev) => [...prev, item.id])
     dispatch({
       type: 'ADD_INVENTORY_ITEM',
-      item: {
-        id: newId('item'),
-        nome: nuovo.nome.trim(),
-        descrizione: '',
-        peso: Number(nuovo.peso) || 0,
-        quantita: Number(nuovo.quantita) || 1
-      }
+      item
     })
     setNuovo({ nome: '', peso: '', quantita: 1 })
   }
@@ -84,6 +200,18 @@ export default function Inventory() {
         </Box>
       </Box>
 
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+        <Button size="small" variant="outlined" onClick={sortInventoryAlphabetically}>
+          Ordina A-Z
+        </Button>
+        <Button size="small" variant="outlined" onClick={sortInventoryByWeight}>
+          Ordina per peso
+        </Button>
+        <Button size="small" variant="outlined" onClick={sortInventoryCustom}>
+          Ordine personalizzato
+        </Button>
+      </Box>
+
       <Box className="inventory-list">
         <Box className="inventory-list__row inventory-list__row--head">
           <span>Oggetto</span>
@@ -92,41 +220,15 @@ export default function Inventory() {
           <span>Tot.</span>
           <span />
         </Box>
-        {c.inventory.map((item) => (
-          <Box key={item.id} className="inventory-item">
-            <Box className="inventory-list__row">
-              <EditableField
-                value={item.nome}
-                onChange={(v) => updateItem(item.id, 'nome', v)}
-                fullWidth
-              />
-              <EditableField
-                value={item.peso}
-                onChange={(v) => updateItem(item.id, 'peso', Number(v) || 0)}
-                type="number"
-              />
-              <EditableField
-                value={item.quantita}
-                onChange={(v) => updateItem(item.id, 'quantita', Number(v) || 0)}
-                type="number"
-              />
-              <span className="inventory-list__total">
-                {((Number(item.peso) || 0) * (Number(item.quantita) || 0)).toFixed(2)}
-              </span>
-              <IconButton size="small" onClick={() => removeItem(item.id)} aria-label="Rimuovi oggetto">
-                <DeleteOutlineIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <Box className="inventory-item__desc">
-              <EditableField
-                value={item.descrizione || ''}
-                onChange={(v) => updateItem(item.id, 'descrizione', v)}
-                multiline
-                fullWidth
-                placeholder="Aggiungi una descrizione…"
-              />
-            </Box>
-          </Box>
+        {c.inventory.map((item, index) => (
+          <InventoryRow
+            key={item.id}
+            item={item}
+            index={index}
+            onUpdate={updateItem}
+            onRemove={removeItem}
+            onMove={moveItem}
+          />
         ))}
 
         <Box className="inventory-list__row inventory-list__row--new">

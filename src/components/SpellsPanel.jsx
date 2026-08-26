@@ -1,82 +1,118 @@
-import React, { useMemo } from 'react'
-import { Box, Typography, IconButton, Button, Chip } from '@mui/material'
+import React, { useMemo, useState } from 'react'
+import { Box, Typography, IconButton, Button, Chip, Collapse } from '@mui/material'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import AddIcon from '@mui/icons-material/Add'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { useField } from '../context/CharacterContext'
 import useDerived from '../hooks/useDerived'
 import { newId } from '../utils/dnd'
 import EditableField from './EditableField'
 import UsageTracker from './UsageTracker'
 import SectionCard from './SectionCard'
+import ConfirmDeleteDialog from './ConfirmDeleteDialog'
 
 function levelLabel(lv) {
   return Number(lv) === 0 ? 'Trucchetto' : `Livello ${lv}`
 }
 
 function SpellCard({ spell, onUpdate, onRemove }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const spellName = spell.nome?.trim() || 'Questo incantesimo'
+
   return (
-    <Box className="spell-card">
-      <Box className="spell-card__head">
-        <Box className="spell-card__name">
-          <EditableField value={spell.nome} onChange={(v) => onUpdate({ ...spell, nome: v })} fullWidth />
-          {spell.daTalento && <Chip label="Talento" size="small" className="spell-card__talent-chip" />}
+    <>
+      <Box className={`spell-card ${isOpen ? 'is-open' : 'is-closed'}`}>
+        <Box className="spell-card__head">
+          <Box className="spell-card__name">
+            <EditableField value={spell.nome} onChange={(v) => onUpdate({ ...spell, nome: v })} fullWidth />
+            {!isOpen && spell.daTalento && <Chip label="Talento" size="small" className="spell-card__talent-chip" />}
+          </Box>
+
+          {isOpen && (
+            <Box className="spell-card__level">
+              <span>Liv.</span>
+              <EditableField
+                value={spell.livello}
+                onChange={(v) => onUpdate({ ...spell, livello: Math.max(0, Number(v) || 0) })}
+                type="number"
+                minWidth={40}
+              />
+            </Box>
+          )}
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton size="small" onClick={() => setIsOpen((prev) => !prev)} aria-label={isOpen ? 'Chiudi incantesimo' : 'Apri incantesimo'}>
+              {isOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+            </IconButton>
+            {isOpen && (
+              <IconButton size="small" onClick={() => setConfirmOpen(true)} aria-label="Rimuovi incantesimo">
+                <DeleteOutlineIcon fontSize="small" />
+              </IconButton>
+            )}
+          </Box>
         </Box>
-        <Box className="spell-card__level">
-          <span>Liv.</span>
-          <EditableField
-            value={spell.livello}
-            onChange={(v) => onUpdate({ ...spell, livello: Math.max(0, Number(v) || 0) })}
-            type="number"
-            minWidth={40}
-          />
-        </Box>
-        <IconButton size="small" onClick={onRemove} aria-label="Rimuovi incantesimo">
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
+
+        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+          <Box>
+            <Box className="spell-card__grid">
+              <Box className="spell-card__field">
+                <span className="spell-card__field-label">Tempo di Lancio</span>
+                <EditableField
+                  value={spell.tempoLancio}
+                  onChange={(v) => onUpdate({ ...spell, tempoLancio: v })}
+                  fullWidth
+                />
+              </Box>
+              <Box className="spell-card__field">
+                <span className="spell-card__field-label">Tipo di Azione</span>
+                <EditableField
+                  value={spell.tipoAzione}
+                  onChange={(v) => onUpdate({ ...spell, tipoAzione: v })}
+                  fullWidth
+                />
+              </Box>
+              <Box className="spell-card__field">
+                <span className="spell-card__field-label">Gittata</span>
+                <EditableField value={spell.gittata} onChange={(v) => onUpdate({ ...spell, gittata: v })} fullWidth />
+              </Box>
+              <Box className="spell-card__field">
+                <span className="spell-card__field-label">Componenti</span>
+                <EditableField
+                  value={spell.componenti}
+                  onChange={(v) => onUpdate({ ...spell, componenti: v })}
+                  fullWidth
+                />
+              </Box>
+            </Box>
+
+            <Box className="spell-card__effect">
+              <span className="spell-card__field-label">Effetti</span>
+              <EditableField
+                value={spell.effetti}
+                onChange={(v) => onUpdate({ ...spell, effetti: v })}
+                multiline
+                fullWidth
+                placeholder="Descrivi l'effetto dell'incantesimo…"
+              />
+            </Box>
+          </Box>
+        </Collapse>
       </Box>
 
-      <Box className="spell-card__grid">
-        <Box className="spell-card__field">
-          <span className="spell-card__field-label">Tempo di Lancio</span>
-          <EditableField
-            value={spell.tempoLancio}
-            onChange={(v) => onUpdate({ ...spell, tempoLancio: v })}
-            fullWidth
-          />
-        </Box>
-        <Box className="spell-card__field">
-          <span className="spell-card__field-label">Tipo di Azione</span>
-          <EditableField
-            value={spell.tipoAzione}
-            onChange={(v) => onUpdate({ ...spell, tipoAzione: v })}
-            fullWidth
-          />
-        </Box>
-        <Box className="spell-card__field">
-          <span className="spell-card__field-label">Gittata</span>
-          <EditableField value={spell.gittata} onChange={(v) => onUpdate({ ...spell, gittata: v })} fullWidth />
-        </Box>
-        <Box className="spell-card__field">
-          <span className="spell-card__field-label">Componenti</span>
-          <EditableField
-            value={spell.componenti}
-            onChange={(v) => onUpdate({ ...spell, componenti: v })}
-            fullWidth
-          />
-        </Box>
-      </Box>
-
-      <Box className="spell-card__effect">
-        <span className="spell-card__field-label">Effetti</span>
-        <EditableField
-          value={spell.effetti}
-          onChange={(v) => onUpdate({ ...spell, effetti: v })}
-          multiline
-          fullWidth
-          placeholder="Descrivi l'effetto dell'incantesimo…"
-        />
-      </Box>
-    </Box>
+      <ConfirmDeleteDialog
+        open={confirmOpen}
+        title="Eliminare l'incantesimo?"
+        itemName={spellName}
+        description={`Stai per rimuovere "${spellName}" dalla scheda. Vuoi procedere?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          onRemove()
+          setConfirmOpen(false)
+        }}
+      />
+    </>
   )
 }
 

@@ -1,92 +1,159 @@
-<<<<<<< HEAD
 # Kurotsume-sheet
-=======
-# Scheda del Personaggio — Kurotsume (D&D 5e)
 
-App web in React + Material UI + SCSS, responsive (desktop, tablet, mobile),
-per la scheda del personaggio di Kurotsume, livello 11.
+Scheda del personaggio di Kurotsume in React + Material UI + SCSS, pensata per D&D 5e.
 
-## Caratteristiche
+## Descrizione
 
-- Tutti i campi sono modificabili: basta cliccarci sopra.
-- I valori derivati (modificatori, bonus alle abilità, tiri salvezza, CA,
-  CD incantesimi, peso trasportato, ecc.) si aggiornano automaticamente
-  quando cambi un punteggio caratteristica o un oggetto nell'inventario.
-- Le capacità con un numero limitato di utilizzi (Second Wind, Azione
-  Impetuosa, Indomito, Punti Stregoneria, Teletrasporto, Dadi Superiorità,
-  Dadi Vita, slot incantesimo) hanno dei pallini cliccabili: clicca per
-  consumare un utilizzo, clicca di nuovo per recuperarlo.
-- Sezioni "Abilità" e "Talenti e Capacità" ingrandite, come richiesto.
-- **Talenti e Capacità**: nome e descrizione di ogni voce sono modificabili,
-  puoi aggiungerne di nuove o rimuoverle liberamente in ognuno dei quattro
-  gruppi (Talenti, Guerriero, Stregone, Razziali), e impostare/rimuovere il
-  contatore di utilizzi per ciascuna.
-- **Incantesimi**: ogni incantesimo mostra tempo di lancio, tipo di azione,
-  gittata, componenti ed effetti, tutti modificabili; puoi aggiungerne o
-  rimuoverne quanti vuoi, e i gruppi per livello si aggiornano da soli.
-- **Attacchi**: ogni arma è completamente modificabile (nome, caratteristica
-  usata, bonus magico, bonus danno extra, dado e tipo di danno, proprietà),
-  e puoi aggiungere o rimuovere armi liberamente.
-- **Inventario**: ogni oggetto può avere una breve descrizione sotto al nome.
-- Tutto lo stato viene salvato automaticamente nel browser (localStorage),
-  quindi le modifiche non si perdono ricaricando la pagina. Il pulsante
-  "Ripristina dati originali" in fondo alla pagina riporta la scheda ai
-  dati di partenza di Kurotsume.
+Questa applicazione permette di gestire una scheda di personaggio completa, con campi editabili, calcoli automatici, incantesimi, inventario, attacchi, background e tutte le informazioni principali del personaggio.
 
-## Avvio in locale
+## Funzioni principali
 
-Serve [Node.js](https://nodejs.org/) (versione 18 o superiore) installato
-sul computer.
+- Campi modificabili direttamente dalla scheda.
+- Aggiornamento automatico di valori derivati (modificatori, bonus, CA, CD incantesimi, peso trasportato, ecc.).
+- Gestione di abilità, tiri salvataggio, incantesimi e attacchi.
+- Inventario con oggetti personalizzabili.
+- Salvataggio automatico nel browser tramite localStorage.
+- Pulsanti di backup con esportazione JSON e importazione di un file di salvataggio.
+- Reset della scheda ai dati iniziali.
+- Link diretto al repository GitHub.
 
-1. Apri il terminale nella cartella del progetto (dove si trova questo file).
-2. Installa le dipendenze:
+## Requisiti
 
-   ```bash
-   npm install
-   ```
+Per poter far partire il progetto serve:
 
-3. Avvia il server di sviluppo:
+- Windows 10/11 (per i file di bootstrap forniti in questa repo)
+- Node.js 18+ consigliato
+- npm
+- accesso a Internet per scaricare le dipendenze iniziali
 
-   ```bash
-   npm run dev
-   ```
+## Avvio rapido su un PC nuovo
 
-4. Apri nel browser l'indirizzo che compare in console (di norma
-   `http://localhost:5173`).
+Nel repository sono stati aggiunti due file di bootstrap:
 
-Per generare una build ottimizzata da pubblicare online:
+- configurazioneInizialeEAvvio.cmd
+- configurazioneInizialeEAvvio.ps1
+
+Questi file fanno automaticamente tutto il necessario:
+
+1. controllano se Node.js e npm sono installati
+2. se mancano, li installano tramite winget o choco
+3. eseguono npm install
+4. eseguono npm run build per verificare che il progetto compili
+5. avviano il server di sviluppo Vite
+6. aprono il browser a http://localhost:5173
+
+### Metodo più semplice
+
+Doppio click su:
+
+```powershell
+configurazioneInizialeEAvvio.cmd
+```
+
+oppure da PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\configurazioneInizialeEAvvio.ps1
+```
+
+## Avvio manuale
+
+Se vuoi farlo a mano, esegui:
+
+```bash
+npm install
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+Poi apri nel browser:
+
+```text
+http://localhost:5173
+```
+
+Per produrre una build di distribuzione:
 
 ```bash
 npm run build
-npm run preview   # per testare in locale la build di produzione
+npm run preview
 ```
 
-## Note sui dati
+## Backup e recupero della scheda
 
-- I pesi degli oggetti dell'inventario non erano specificati nel file
-  originale del personaggio: sono stati stimati dai pesi ufficiali del
-  Manuale del Giocatore (convertiti in kg) per gli oggetti equivalenti.
-  Sono comunque modificabili liberamente dalla scheda.
-- Le due abilità mancanti nella scheda originale (Storia, Intuizione) sono
-  state aggiunte secondo l'elenco ufficiale delle 18 abilità di D&D 5e,
-  senza competenza, coerentemente con il valore di Intuizione Passiva già
-  presente nei dati forniti.
-- "Second Wind" è stato tradotto con il nome ufficiale italiano
-  "Recuperare Energie".
-- Il trucchetto "Passo di Gelo" indicato nel file originale non corrisponde
-  a un incantesimo ufficiale: i dettagli inseriti sono quelli di "Raggio di
-  Gelo" (Ray of Frost), il più vicino per tema ed effetto. Nome e testo
-  restano comunque modificabili in scheda.
+La scheda supporta due tipi di salvataggio:
+
+### 1) Salvataggio automatico in browser
+
+Le modifiche vengono salvate automaticamente nel browser tramite localStorage.
+
+Questo significa che riaprendo la scheda nello stesso dispositivo, normalmente i dati sono già lì.
+
+### 2) Backup JSON
+
+Cliccando sul pulsante "Salva modifiche" viene scaricato un file JSON con lo stato attuale della scheda.
+
+Questo file può essere usato per:
+
+- fare un backup locale del personaggio
+- recuperare la scheda su un altro dispositivo
+- riportare una versione precedente della scheda
+
+Per ricaricare il backup:
+
+- clicca su "Carica file"
+- seleziona il file JSON scaricato
+- la scheda verrà ripristinata con i dati contenuti nel file
+
+## GitHub e push
+
+Il repository è collegato a GitHub e il bottone "Repo GitHub" apre il progetto online.
+
+Il push diretto da una SPA come questa non è equivalente a salvare i dati della scheda del personaggio: il codice front-end non può fare un git push con autenticazione privata dal browser.
+
+Per pubblicare il repo da un PC con Git installato e autenticato, si usa normalmente:
+
+```bash
+git add .
+git commit -m "Aggiornamento scheda"
+git push origin main
+```
 
 ## Struttura del progetto
 
+```text
+.
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── data/
+│   ├── hooks/
+│   ├── styles/
+│   ├── utils/
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── theme.js
+├── public/
+├── package.json
+├── package-lock.json
+├── vite.config.js
+├── index.html
+├── configurazioneInizialeEAvvio.ps1
+├── configurazioneInizialeEAvvio.cmd
+├── README.md
+└── .gitignore
 ```
-src/
-  components/     Componenti dell'interfaccia (header, pannelli, campi editabili…)
-  context/        Stato globale del personaggio (React Context + localStorage)
-  data/           Dati di partenza del personaggio
-  hooks/          Calcoli derivati (modificatori, CA, peso, CD incantesimi…)
-  styles/         Foglio di stile SCSS globale
-  utils/          Funzioni di regolamento D&D 5e (modificatori, bonus competenza…)
-```
->>>>>>> 3e518c4 (Aggiornamento scheda Kurotsume)
+
+## Note sui dati e sul progetto
+
+- I pesi degli oggetti dell'inventario sono stati stimati e possono essere modificati liberamente.
+- Le abilità mancanti sono state integrate coerentemente con i dati del personaggio.
+- La scheda è pensata per essere facilmente adattabile a qualsiasi personaggio, non solo a Kurotsume.
+- La struttura è modulare: i dati di stato sono separati dai componenti e i calcoli derivati sono gestiti in hook dedicati.
+
+## Supporto
+
+Per eventuali modifiche, aggiunte o correzioni al contenuto della scheda, è consigliato lavorare direttamente sui file in `src/data/initialCharacter.js`, `src/components/` e `src/styles/`.
+
+## Licenza
+
+Questo progetto è stato creato per uso personale e per gestione del personaggio Kurotsume. Eventuali modifiche e adattamenti sono liberi, ma va sempre mantenuto rispetto per i contenuti del gioco e del personaggio.

@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Box, Container, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import { useCharacter, useCharacterDispatch } from './context/CharacterContext'
 
@@ -20,13 +21,16 @@ import Notes from './components/Notes'
 export default function App() {
   const character = useCharacter()
   const dispatch = useCharacterDispatch()
+  const fileInputRef = useRef(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
+  // Reimposta la scheda ai dati iniziali di Kurotsume.
   const handleReset = () => {
     dispatch({ type: 'RESET' })
     setConfirmOpen(false)
   }
 
+  // Esporta lo stato attuale della scheda come file JSON per fare un backup locale.
   const handleSave = () => {
     const payload = JSON.stringify(character, null, 2)
     const blob = new Blob([payload], { type: 'application/json' })
@@ -40,6 +44,27 @@ export default function App() {
     URL.revokeObjectURL(url)
   }
 
+  // Carica un backup JSON precedentemente salvato e sostituisce lo stato attuale.
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const parsed = JSON.parse(text)
+      if (!parsed || typeof parsed !== 'object') {
+        throw new Error('File non valido')
+      }
+      dispatch({ type: 'IMPORT', payload: parsed })
+    } catch (error) {
+      console.error('Import backup fallito:', error)
+      window.alert('File non valido: seleziona un backup JSON della scheda.')
+    } finally {
+      event.target.value = ''
+    }
+  }
+
+  // Apre il repository GitHub del progetto in una nuova scheda del browser.
   const handleOpenGithub = () => {
     window.open('https://github.com/spizzicoli/Kurotsume-sheet', '_blank', 'noopener,noreferrer')
   }
@@ -87,6 +112,22 @@ export default function App() {
             >
               Salva modifiche
             </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              startIcon={<UploadFileIcon />}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Carica file
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              hidden
+              onChange={handleImport}
+            />
             <Button
               size="small"
               variant="outlined"

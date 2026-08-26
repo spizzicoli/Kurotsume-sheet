@@ -26,7 +26,7 @@ const initialCharacter = {
     ],
     livelloTotale: 11,
     allineamento: 'Neutrale',
-    eta: 27,
+    eta: 90,
     taglia: 'Media',
     velocita: 9,
     esperienza: '—',
@@ -99,12 +99,22 @@ const initialCharacter = {
     {
       id: id('atk'),
       nome: 'Tantō',
-      abilita: 'for',
-      bonusMagico: 0,
-      bonusDannoExtra: 0,
+      abilita: 'des',
+      bonusMagico: 1,
+      bonusDannoExtra: 2,
       dadoDanno: '1d4',
       tipoDanno: 'Perforante',
       proprieta: ['Leggera', 'Finesse', 'Da lancio (6/18 m)']
+    },
+    {
+      id: id('atk'),
+      nome: 'Kunai',
+      abilita: 'des',
+      bonusMagico: 1,
+      bonusDannoExtra: 2,
+      dadoDanno: '1d4',
+      tipoDanno: 'Tagliente',
+      proprieta: ['Leggera', 'Da lancio (6/18 m)', 'Precisa']
     }
   ],
 
@@ -158,7 +168,7 @@ const initialCharacter = {
       {
         id: id('feat'),
         nome: 'Dadi Superiorità (d8) — Maestro di Battaglia',
-        descrizione: 'Manovre conosciute: Attacco Preciso, Attacco Sbilanciante, Attacco Disarmante, Attacco Minaccioso. Si ricaricano con un riposo breve o lungo.',
+        descrizione: 'Manovre conosciute:\n\nAttacco Preciso: attacco con arma + 1 dado superiorità al tiro per colpire prima di sapere se colpirei.\n\nAttacco Disarmante: attacco con arma + 1 dado superiorità ai danni, nemico TS FOR fallisce disarmato.\n\nAttacco Sbilanciante: attacco con arma + 1 dado superiorità ai danni, nemico TS FOR fallisce prono.\n\nAttacco Minaccioso: attacco con arma, + 1 dado superiorità ai danni, nemico TS SAG fallisce spaventato da me fino alla fine del mio turno successivo.\n\nSi ricaricano con un riposo breve o lungo.',
         usiMax: 4,
         usiSpesi: 0
       }
@@ -185,13 +195,6 @@ const initialCharacter = {
         usiMax: 0,
         usiSpesi: 0
       },
-      {
-        id: id('feat'),
-        nome: 'Magia Innata dell\u2019Ombra',
-        descrizione: 'Incantesimi e capacità aggiuntive legate al Piano d\u2019Ombra, ottenute grazie alla sottoclasse Stregoneria Ombra.',
-        usiMax: 0,
-        usiSpesi: 0
-      }
     ],
     razziali: [
       {
@@ -205,27 +208,6 @@ const initialCharacter = {
         id: id('feat'),
         nome: 'Resistenza Necrotica',
         descrizione: 'Hai resistenza ai danni necrotici.',
-        usiMax: 0,
-        usiSpesi: 0
-      },
-      {
-        id: id('feat'),
-        nome: 'Longevo',
-        descrizione: 'Invecchi molto più lentamente rispetto alle altre razze umanoidi.',
-        usiMax: 0,
-        usiSpesi: 0
-      },
-      {
-        id: id('feat'),
-        nome: 'Scurovisione (36 m)',
-        descrizione: 'Vedi al buio entro 36 metri come se fosse penombra, e in penombra come se fosse piena luce (solo in scala di grigi).',
-        usiMax: 0,
-        usiSpesi: 0
-      },
-      {
-        id: id('feat'),
-        nome: 'Lingue',
-        descrizione: 'Comune, Elfico, Abissale',
         usiMax: 0,
         usiSpesi: 0
       }
@@ -404,7 +386,7 @@ const initialCharacter = {
     legami: 'Il Clan della Luna Nera.',
     difetti: 'Ossessione per la forza, difficoltà a fidarsi.',
     lingue: 'Comune, Elfico, Abissale',
-    tratti: 'Scurovisione 36 m · Resistenza ai danni necrotici · Vantaggio sui tiri salvezza contro l\u2019affascinamento · Riposo lungo 4 ore'
+    tratti: 'Scurovisione 36 m · Resistenza ai danni necrotici · Vantaggio sui tiri salvezza contro l\u2019affascinamento · Riposo breve 4 ore'
   },
 
   note: [

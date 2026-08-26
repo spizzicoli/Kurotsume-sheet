@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TextField, Typography, Box } from '@mui/material'
 
 /**
@@ -18,8 +18,14 @@ export default function EditableField({
   fullWidth = false,
   placeholder = ''
 }) {
-  const [draft, setDraft] = useState(value ?? '')
+  const [draft, setDraft] = useState(type === 'number' ? '' : value ?? '')
   const [editing, setEditing] = useState(false)
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(type === 'number' ? '' : value ?? '')
+    }
+  }, [value, editing, type])
 
   const commit = () => {
     setEditing(false)
@@ -47,7 +53,7 @@ export default function EditableField({
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !multiline) commit()
           if (e.key === 'Escape') {
-            setDraft(value ?? '')
+            setDraft(type === 'number' ? (value === 0 ? '' : String(value ?? '')) : value ?? '')
             setEditing(false)
           }
         }}
@@ -63,7 +69,7 @@ export default function EditableField({
       <Box
         className="editable-stat"
         onClick={() => {
-          setDraft(value ?? '')
+          setDraft(type === 'number' ? (value === 0 ? '' : String(value ?? '')) : value ?? '')
           setEditing(true)
         }}
         title="Clicca per modificare"
@@ -79,7 +85,7 @@ export default function EditableField({
       component="span"
       className="editable-field"
       onClick={() => {
-        setDraft(value ?? '')
+        setDraft(type === 'number' ? (value === 0 ? '' : String(value ?? '')) : value ?? '')
         setEditing(true)
       }}
       title="Clicca per modificare"

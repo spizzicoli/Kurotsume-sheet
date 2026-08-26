@@ -22,6 +22,7 @@ $font-display: 'Cinzel', serif;
 $font-body: 'EB Garamond', Georgia, serif;
 
 @mixin plaque-corners {
+
   &::before,
   &::after {
     content: '';
@@ -31,12 +32,14 @@ $font-body: 'EB Garamond', Georgia, serif;
     border: 1px solid $gold;
     opacity: 0.7;
   }
+
   &::before {
     top: -1px;
     left: -1px;
     border-right: none;
     border-bottom: none;
   }
+
   &::after {
     top: -1px;
     right: -1px;
@@ -49,14 +52,20 @@ $font-body: 'EB Garamond', Georgia, serif;
   box-sizing: border-box;
 }
 
+html {
+  font-size: 17px;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  background: radial-gradient(ellipse at top, #171b2b 0%, $ink 55%, #08090d 100%);
+  background: radial-gradient(ellipse at top, #1d2434 0%, #121827 52%, #0a0d14 100%);
   background-attachment: fixed;
   color: $parchment;
   font-family: $font-body;
+  font-size: 17px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -69,9 +78,11 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: $ink;
 }
+
 ::-webkit-scrollbar-thumb {
   background: $steel-dim;
   border-radius: 6px;
@@ -87,10 +98,9 @@ body {
 // -----------------------------------------------------------
 .char-header {
   position: relative;
-  padding: 28px 24px 44px;
-  background:
-    linear-gradient(160deg, rgba(140, 42, 58, 0.18), rgba(92, 133, 171, 0.1) 55%, transparent 80%),
-    linear-gradient(180deg, #14172380 0%, $ink 100%);
+  max-width: 1536px;
+  margin: 0 auto;
+  padding: 28px 0 44px;
   border-bottom: 1px solid $line-strong;
   overflow: hidden;
 
@@ -101,20 +111,17 @@ body {
     left: 0;
     right: 0;
     bottom: -1px;
-    height: 18px;
-    background: $ink;
-    clip-path: polygon(
-      0% 0%, 4% 100%, 9% 15%, 14% 100%, 19% 20%, 25% 100%, 31% 10%, 37% 100%,
-      43% 25%, 49% 100%, 55% 5%, 61% 100%, 67% 18%, 73% 100%, 79% 8%, 85% 100%,
-      91% 22%, 97% 100%, 100% 0%
-    );
+    background:
+      linear-gradient(160deg, rgba(140, 42, 58, 0.18), rgba(92, 133, 171, 0.1) 55%, transparent 80%),
+      linear-gradient(180deg, #14172380 0%, $ink 100%);
   }
 
   &__inner {
     position: relative;
     z-index: 1;
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
   }
 
   &__portrait-frame {
@@ -143,7 +150,7 @@ body {
   &__name {
     font-family: $font-display;
     font-weight: 700;
-    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    font-size: clamp(2.2rem, 4.8vw, 3.1rem);
     letter-spacing: 0.03em;
     color: $parchment;
     margin: 0 0 2px;
@@ -182,6 +189,7 @@ body {
   &__inspiration {
     color: $parchment-dim;
     margin-left: -8px;
+
     .MuiFormControlLabel-label {
       font-size: 0.85rem;
       letter-spacing: 0.04em;
@@ -197,6 +205,7 @@ body {
   border-bottom: 1px dashed transparent;
   transition: border-color 0.15s, color 0.15s;
   color: inherit;
+
   &:hover {
     border-bottom-color: $line-strong;
     color: $gold-bright;
@@ -206,6 +215,7 @@ body {
 .editable-stat {
   cursor: text;
   display: inline-block;
+
   &:hover {
     color: $gold-bright;
   }
@@ -269,7 +279,7 @@ body {
   gap: 20px;
   align-items: stretch;
 
-  > * {
+  >* {
     height: 100%;
   }
 
@@ -346,6 +356,7 @@ body {
   font-size: 0.85rem;
   color: $parchment-dim;
   margin-bottom: 10px;
+
   strong {
     color: $gold-bright;
   }
@@ -421,6 +432,7 @@ body {
     &.is-proficient {
       background: rgba(201, 162, 39, 0.06);
     }
+
     &:hover {
       background: rgba(92, 133, 171, 0.08);
     }
@@ -554,6 +566,30 @@ body {
   }
 }
 
+.rest-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.rest-btn {
+  flex: 1;
+  color: $gold-bright !important;
+  border-color: rgba(201, 162, 39, 0.5) !important;
+}
+
+.rest-btn--long {
+  color: $blood-bright !important;
+  border-color: rgba(146, 37, 18, 0.5) !important;
+}
+
+.rest-help {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: $parchment-dim;
+}
+
 // -----------------------------------------------------------
 // ATTACKS
 // -----------------------------------------------------------
@@ -624,6 +660,7 @@ body {
 
   &__tags {
     margin-bottom: 4px;
+
     .editable-field {
       font-size: 0.78rem;
       color: $parchment-dim;
@@ -724,6 +761,7 @@ body {
     flex-shrink: 0;
     margin-top: -4px;
     opacity: 0.55;
+
     &:hover {
       opacity: 1;
       color: $blood-bright;
@@ -890,6 +928,16 @@ body {
   padding: 9px 10px 10px;
   margin-bottom: 10px;
   background: $ink-raised;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &.is-closed {
+    border-left-color: rgba(92, 133, 171, 0.8);
+    background: rgba(35, 42, 63, 0.92);
+  }
+
+  &.is-open {
+    border-left-color: $steel;
+  }
 
   &__head {
     display: flex;
@@ -905,9 +953,13 @@ body {
     gap: 6px;
     font-weight: 600;
     color: $parchment;
+    min-width: 0;
 
     .editable-field {
       display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
@@ -1037,6 +1089,7 @@ body {
       .MuiInputBase-root {
         font-size: 0.85rem;
       }
+
       margin-top: 4px;
     }
   }
@@ -1155,6 +1208,7 @@ body {
     &__inner {
       text-align: center;
     }
+
     &__meta,
     &__inspiration {
       justify-content: center;

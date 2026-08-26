@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Typography, Divider, IconButton, Button } from '@mui/material'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import AddIcon from '@mui/icons-material/Add'
@@ -8,57 +8,74 @@ import { newId } from '../utils/dnd'
 import EditableField from './EditableField'
 import UsageTracker from './UsageTracker'
 import SectionCard from './SectionCard'
+import ConfirmDeleteDialog from './ConfirmDeleteDialog'
 
 function FeatureItem({ item, onUpdate, onRemove }) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const hasTracker = Number(item.usiMax) > 0
+  const featureName = item.nome?.trim() || 'Questa capacità'
 
   return (
-    <Box className="feature-row">
-      <Box className="feature-row__head">
-        <Typography className="feature-row__name" component="div">
+    <>
+      <Box className="feature-row">
+        <Box className="feature-row__head">
+          <Typography className="feature-row__name" component="div">
+            <EditableField
+              value={item.nome}
+              onChange={(v) => onUpdate({ ...item, nome: v })}
+              fullWidth
+            />
+          </Typography>
+          <IconButton size="small" onClick={() => setConfirmOpen(true)} aria-label="Rimuovi capacità" className="feature-row__remove">
+            <DeleteOutlineIcon fontSize="small" />
+          </IconButton>
+        </Box>
+
+        <Box className="feature-row__desc" component="div">
           <EditableField
-            value={item.nome}
-            onChange={(v) => onUpdate({ ...item, nome: v })}
+            value={item.descrizione}
+            onChange={(v) => onUpdate({ ...item, descrizione: v })}
+            multiline
             fullWidth
+            placeholder="Aggiungi una descrizione…"
           />
-        </Typography>
-        <IconButton size="small" onClick={onRemove} aria-label="Rimuovi capacità" className="feature-row__remove">
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
+        </Box>
+
+        <Box className="feature-row__usage">
+          <span className="feature-row__usage-label">
+            Utilizzi:{' '}
+            <EditableField
+              value={item.usiMax || 0}
+              onChange={(v) => {
+                const usiMax = Math.max(0, Number(v) || 0)
+                onUpdate({ ...item, usiMax, usiSpesi: Math.min(item.usiSpesi || 0, usiMax) })
+              }}
+              type="number"
+              minWidth={40}
+            />
+          </span>
+          {hasTracker && (
+            <UsageTracker
+              usiMax={item.usiMax}
+              usiSpesi={item.usiSpesi || 0}
+              onChange={(usiSpesi) => onUpdate({ ...item, usiSpesi })}
+            />
+          )}
+        </Box>
       </Box>
 
-      <Box className="feature-row__desc" component="div">
-        <EditableField
-          value={item.descrizione}
-          onChange={(v) => onUpdate({ ...item, descrizione: v })}
-          multiline
-          fullWidth
-          placeholder="Aggiungi una descrizione…"
-        />
-      </Box>
-
-      <Box className="feature-row__usage">
-        <span className="feature-row__usage-label">
-          Utilizzi:{' '}
-          <EditableField
-            value={item.usiMax || 0}
-            onChange={(v) => {
-              const usiMax = Math.max(0, Number(v) || 0)
-              onUpdate({ ...item, usiMax, usiSpesi: Math.min(item.usiSpesi || 0, usiMax) })
-            }}
-            type="number"
-            minWidth={40}
-          />
-        </span>
-        {hasTracker && (
-          <UsageTracker
-            usiMax={item.usiMax}
-            usiSpesi={item.usiSpesi || 0}
-            onChange={(usiSpesi) => onUpdate({ ...item, usiSpesi })}
-          />
-        )}
-      </Box>
-    </Box>
+      <ConfirmDeleteDialog
+        open={confirmOpen}
+        title="Eliminare la capacità?"
+        itemName={featureName}
+        description={`Stai per rimuovere "${featureName}" dalla scheda. Vuoi procedere?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          onRemove()
+          setConfirmOpen(false)
+        }}
+      />
+    </>
   )
 }
 

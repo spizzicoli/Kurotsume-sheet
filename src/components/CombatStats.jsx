@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Box } from '@mui/material'
-import { useField } from '../context/CharacterContext'
+import { Box, Button } from '@mui/material'
+import { useCharacter, useCharacterDispatch, useField } from '../context/CharacterContext'
 import useDerived from '../hooks/useDerived'
 import { fmtMod } from '../utils/dnd'
 import EditableField from './EditableField'
@@ -8,6 +8,8 @@ import UsageTracker from './UsageTracker'
 import SectionCard from './SectionCard'
 
 export default function CombatStats() {
+  const character = useCharacter()
+  const dispatch = useCharacterDispatch()
   const [acBase, setAcBase] = useField(['combat', 'acBase'])
   const [acAltriBonus, setAcAltriBonus] = useField(['combat', 'acAltriBonus'])
   const [hpMax, setHpMax] = useField(['combat', 'hpMax'])
@@ -26,6 +28,40 @@ export default function CombatStats() {
 
     setHpCurrent(Number(hpCurrent || 0) - dmg)
     setDamageTaken('')
+  }
+
+  const handleShortRest = () => {
+    const resetFeatureGroups = Object.fromEntries(
+      Object.entries(character.featureGroups || {}).map(([groupName, entries]) => [
+        groupName,
+        (Array.isArray(entries) ? entries : []).map((entry) => {
+          const description = entry.descrizione || ''
+          const isShortRestRechargable = /riposo breve/i.test(description)
+          const isLongRestOnly = /riposo lungo/i.test(description) && !/riposo breve/i.test(description)
+
+          if (isLongRestOnly || !isShortRestRechargable) return entry
+          return { ...entry, usiSpesi: 0 }
+        })
+      ])
+    )
+
+    dispatch({ type: 'SET_PATH', path: ['featureGroups'], value: resetFeatureGroups })
+  }
+
+  const handleLongRest = () => {
+    const resetFeatureGroups = Object.fromEntries(
+      Object.entries(character.featureGroups || {}).map(([groupName, entries]) => [
+        groupName,
+        (Array.isArray(entries) ? entries : []).map((entry) => ({ ...entry, usiSpesi: 0 }))
+      ])
+    )
+
+    dispatch({ type: 'SET_PATH', path: ['combat', 'hpCurrent'], value: Number(hpMax) || 0 })
+    dispatch({ type: 'SET_PATH', path: ['combat', 'hpTemp'], value: 0 })
+    dispatch({ type: 'SET_PATH', path: ['combat', 'hitDice'], value: hitDice.map((hd) => ({ ...hd, usati: 0 })) })
+    dispatch({ type: 'SET_PATH', path: ['spells', 'slots'], value: (character.spells?.slots || []).map((slot) => ({ ...slot, usiSpesi: 0 })) })
+    dispatch({ type: 'SET_PATH', path: ['spells', 'spellPoints'], value: 3 })
+    dispatch({ type: 'SET_PATH', path: ['featureGroups'], value: resetFeatureGroups })
   }
 
   return (
@@ -92,6 +128,18 @@ export default function CombatStats() {
             />
           </Box>
         ))}
+      </Box>
+
+      <Box className="rest-buttons">
+        <Button size="small" variant="outlined" color="secondary" className="rest-btn" onClick={handleShortRest}>
+          Riposo breve
+        </Button>
+        <Button size="small" variant="outlined" color="secondary" className="rest-btn rest-btn--long" onClick={handleLongRest}>
+          Riposo lungo
+        </Button>
+      </Box>
+      <Box className="rest-help">
+        Riposo breve ricarica abilità e usi collegati al riposo breve; riposo lungo rigenera PF, dadi vita e tutte le risorse di lunga durata.
       </Box>
     </SectionCard>
   )
