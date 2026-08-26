@@ -21,30 +21,32 @@ Questa applicazione permette di gestire una scheda di personaggio completa, con 
 
 Per poter far partire il progetto serve:
 
-- Windows 10/11 (per i file di bootstrap forniti in questa repo)
+- Windows 10/11, macOS o iPadOS con shell compatibile (per i file di bootstrap forniti in questa repo)
 - Node.js 18+ consigliato
 - npm
 - accesso a Internet per scaricare le dipendenze iniziali
 
-## Avvio rapido su un PC nuovo
+## Avvio rapido su un PC nuovo o su Mac/iPad
 
-Nel repository sono stati aggiunti due file di bootstrap:
+Nel repository sono stati aggiunti i file di bootstrap:
 
-- configurazioneInizialeEAvvio.cmd
-- configurazioneInizialeEAvvio.ps1
+- configurazioneInizialeEAvvio.cmd (Windows)
+- configurazioneInizialeEAvvio.ps1 (Windows PowerShell)
+- configurazioneInizialeEAvvio.sh (macOS/Linux)
+- configurazioneInizialeEAvvio.command (macOS, doppio click)
 
 Questi file fanno automaticamente tutto il necessario:
 
 1. controllano se Node.js e npm sono installati
-2. se mancano, li installano tramite winget o choco
+2. se mancano, li installano automaticamente con il package manager del sistema
 3. eseguono npm install
 4. eseguono npm run build per verificare che il progetto compili
 5. avviano il server di sviluppo Vite
 6. aprono il browser a http://localhost:5173
 
-### Metodo più semplice
+### Metodi più semplici
 
-Doppio click su:
+Windows:
 
 ```powershell
 configurazioneInizialeEAvvio.cmd
@@ -54,6 +56,19 @@ oppure da PowerShell:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\configurazioneInizialeEAvvio.ps1
+```
+
+macOS / iPadOS (Terminale):
+
+```bash
+chmod +x ./configurazioneInizialeEAvvio.sh
+./configurazioneInizialeEAvvio.sh
+```
+
+oppure da Finder/Files con doppio clic su:
+
+```text
+configurazioneInizialeEAvvio.command
 ```
 
 ## Avvio manuale

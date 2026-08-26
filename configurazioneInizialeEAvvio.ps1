@@ -16,23 +16,58 @@ function Ensure-Command($commandName, $installHint) {
 
     Write-Info "Comando '$commandName' non trovato. Provo a installarlo..."
 
-    try {
-        & winget install --id OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements --silent
-        if ($LASTEXITCODE -ne 0) { throw "winget install fallito" }
-    }
-    catch {
+    if ($IsWindows) {
         try {
-            & choco install nodejs-lts -y --no-progress
-            if ($LASTEXITCODE -ne 0) { throw "choco install fallito" }
+            & winget install --id OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements --silent
+            if ($LASTEXITCODE -ne 0) { throw "winget install fallito" }
         }
         catch {
-            Write-Error "Impossibile installare Node.js automaticamente. Scarica Node.js LTS da https://nodejs.org/ e riavvia il terminale."
+            try {
+                & choco install nodejs-lts -y --no-progress
+                if ($LASTEXITCODE -ne 0) { throw "choco install fallito" }
+            }
+            catch {
+                Write-Error "Impossibile installare Node.js automaticamente. Scarica Node.js LTS da https://nodejs.org/ e riavvia il terminale."
+                Write-Host "Suggerimento: $installHint" -ForegroundColor Yellow
+                exit 1
+            }
+        }
+    }
+    elseif ($IsMacOS) {
+        try {
+            if (-not (Get-Command brew -ErrorAction SilentlyContinue)) {
+                throw "Homebrew non trovato. Installa Homebrew da https://brew.sh/ e riavvia il terminale."
+            }
+
+            & brew install node
+            if ($LASTEXITCODE -ne 0) { throw "brew install node fallito" }
+
+            $brewBinPaths = @(
+                '/opt/homebrew/bin',
+                '/usr/local/bin'
+            )
+            foreach ($brewPath in $brewBinPaths) {
+                if (Test-Path $brewPath) {
+                    $env:PATH = "$brewPath;$env:PATH"
+                }
+            }
+        }
+        catch {
+            Write-Error "Impossibile installare Node.js automaticamente su macOS: $($_.Exception.Message)"
             Write-Host "Suggerimento: $installHint" -ForegroundColor Yellow
             exit 1
         }
     }
+    else {
+        Write-Error "Sistema operativo non supportato da questo script: $($PSVersionTable.OS)"
+        Write-Host "Suggerimento: $installHint" -ForegroundColor Yellow
+        exit 1
+    }
 
-    $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    if ($IsWindows) {
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    }
+
     return $true
 }
 
@@ -41,6 +76,7 @@ Ensure-Command 'node' 'Installa Node.js LTS da https://nodejs.org/ e riavvia il 
 
 $nodeVersion = (& node --version)
 $npmVersion = (& npm --version)
+Write-Host "Sistema: $([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)" -ForegroundColor DarkGray
 Write-Host "Node.js: $nodeVersion" -ForegroundColor Green
 Write-Host "npm: $npmVersion" -ForegroundColor Green
 
@@ -64,13 +100,28 @@ $browserUrl = "http://localhost:$port"
 $devCommand = "cd '$projectRoot'; npm run dev -- --host 0.0.0.0 --port $port"
 
 try {
-    Start-Process powershell -ArgumentList @('-NoExit', '-Command', $devCommand) | Out-Null
-    Start-Sleep -Seconds 2
-    Start-Process $browserUrl
+    if ($IsWindows) {
+        Start-Process powershell -ArgumentList @('-NoExit', '-Command', $devCommand) | Out-Null
+        Start-Sleep -Seconds 2
+        Start-Process $browserUrl
+    }
+    elseif ($IsMacOS) {
+        $macCommand = "cd '$projectRoot' && npm run dev -- --host 0.0.0.0 --port $port"
+        Start-Process bash -ArgumentList @('-lc', $macCommand) | Out-Null
+        Start-Sleep -Seconds 2
+        & open $browserUrl 2>$null
+    }
+    else {
+        Write-Error "L'avvio automatico del browser non è supportato su questo sistema."
+    }
+
     Write-Host "`nServer avviato su: $browserUrl" -ForegroundColor Green
     Write-Host "Se la finestra non si apre, apri manualmente il link sopra." -ForegroundColor Yellow
-    Write-Host "`nPremi un tasto per chiudere questo script..." -ForegroundColor DarkGray
-    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+
+    if ($IsWindows) {
+        Write-Host "`nPremi un tasto per chiudere questo script..." -ForegroundColor DarkGray
+        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+    }
 }
 catch {
     Write-Error "L'avvio del server non è riuscito: $($_.Exception.Message)"
