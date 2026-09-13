@@ -148,6 +148,7 @@ function QuickSectionNav() {
             size="small"
           >
             {section.icon}
+            <span>{section.label}</span>
           </IconButton>
         </Tooltip>
       ))}
