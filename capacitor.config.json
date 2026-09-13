@@ -1,0 +1,8 @@
+{
+  "appId": "it.kurotsume.schedadnd",
+  "appName": "Kurotsume",
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "always"
+  }
+}
