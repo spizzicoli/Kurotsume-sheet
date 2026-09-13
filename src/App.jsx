@@ -9,12 +9,21 @@ import {
   DialogActions,
   CircularProgress,
   Typography,
-  Link
+  Tooltip,
+  IconButton
 } from '@mui/material'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import CloudDoneIcon from '@mui/icons-material/CloudDone'
 import CloudSyncIcon from '@mui/icons-material/CloudSync'
 import CloudOffIcon from '@mui/icons-material/CloudOff'
+import PsychologyIcon from '@mui/icons-material/Psychology'
+import ShieldIcon from '@mui/icons-material/Shield'
+import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import BackpackIcon from '@mui/icons-material/Backpack'
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu'
+import NotesIcon from '@mui/icons-material/Notes'
 import { useCharacterSync } from './context/CharacterContext'
 
 import Header from './components/Header'
@@ -115,6 +124,37 @@ function SyncIndicator() {
   )
 }
 
+const quickSections = [
+  { id: 'abilita', label: 'Abilità', icon: <PsychologyIcon /> },
+  { id: 'difese', label: 'Difese', icon: <ShieldIcon /> },
+  { id: 'combattimento', label: 'Combattimento', icon: <SportsMartialArtsIcon /> },
+  { id: 'capacita', label: 'Capacità', icon: <AutoAwesomeIcon /> },
+  { id: 'incantesimi', label: 'Incantesimi', icon: <MenuBookIcon /> },
+  { id: 'inventario', label: 'Inventario', icon: <BackpackIcon /> },
+  { id: 'background', label: 'Background', icon: <HistoryEduIcon /> },
+  { id: 'note', label: 'Note', icon: <NotesIcon /> }
+]
+
+function QuickSectionNav() {
+  return (
+    <Box component="nav" className="quick-section-nav" aria-label="Sezioni della scheda">
+      {quickSections.map((section) => (
+        <Tooltip key={section.id} title={section.label} arrow>
+          <IconButton
+            component="a"
+            href={`#${section.id}`}
+            className="quick-section-nav__button"
+            aria-label={section.label}
+            size="small"
+          >
+            {section.icon}
+          </IconButton>
+        </Tooltip>
+      ))}
+    </Box>
+  )
+}
+
 function CharacterSheet() {
   const { resetToDefaults } = useCharacterSync()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -127,30 +167,30 @@ function CharacterSheet() {
   return (
     <Box className="sheet-app">
       <Header />
+      <QuickSectionNav />
 
       <Container maxWidth="xl" className="sheet-grid-container">
         <Box className="sheet-grid">
           <Box className="sheet-grid__col sheet-grid__col--left">
-            <AbilityScores />
-            <SavingThrows />
-            <CombatStats />
-            <Attacks />
+            <Box id="caratteristiche"><AbilityScores /></Box>
+            <Box id="difese"><SavingThrows /></Box>
+            <Box id="combattimento"><CombatStats /><Attacks /></Box>
           </Box>
 
           <Box className="sheet-grid__col sheet-grid__col--center">
-            <SkillsPanel />
+            <Box id="abilita"><SkillsPanel /></Box>
           </Box>
 
           <Box className="sheet-grid__col sheet-grid__col--right">
-            <FeaturesPanel />
-            <SpellsPanel />
+            <Box id="capacita"><FeaturesPanel /></Box>
+            <Box id="incantesimi"><SpellsPanel /></Box>
           </Box>
         </Box>
 
         <Box className="sheet-grid sheet-grid--bottom">
-          <Inventory />
-          <Background />
-          <Notes />
+          <Box id="inventario"><Inventory /></Box>
+          <Box id="background"><Background /></Box>
+          <Box id="note"><Notes /></Box>
         </Box>
 
         <Box className="sheet-footer">
