@@ -90,11 +90,14 @@ create table if not exists character_classes (
 create table if not exists skills (
   id            uuid primary key default gen_random_uuid(),
   character_id  uuid not null references characters(id) on delete cascade,
+  ordine        integer not null default 0,
   skill_key     text not null,
   nome          text not null,
   abilita       text not null check (abilita in ('for','des','cos','int','sag','car')),
   competenza    boolean not null default false
 );
+
+alter table skills add column if not exists ordine integer not null default 0;
 
 -- ---------------------------------------------------------
 -- 4) attacks — armi/attacchi, completamente modificabili
