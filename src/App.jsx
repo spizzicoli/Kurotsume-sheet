@@ -49,8 +49,8 @@ function NoConfigScreen() {
         <code>.env.example</code>) con:
       </Typography>
       <Box component="pre" className="app-status-screen__code">
-{`VITE_SUPABASE_URL=https://tuo-progetto.supabase.co
-VITE_SUPABASE_ANON_KEY=tua-chiave-anon-pubblica`}
+{`VITE_SUPABASE_URL="https://spkrzhxewlchwwaaejrq.supabase.co"
+VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3J6aHhld2xjaHd3YWFlanJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMDU2MDQsImV4cCI6MjEwNDg4MTYwNH0.RW9cbgB8Vtz0KdUC3isXyRQjgjrsLmi0kCZi5mmOZAM"`}
       </Box>
       <Typography className="app-status-screen__text">
         Trovi questi valori in Supabase → Project Settings → API. Dopo averli inseriti,

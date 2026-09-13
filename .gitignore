@@ -3,5 +3,5 @@ dist/
 .DS_Store
 *.log
 .env
-ios/
+ios/App/Pods/
 android/
