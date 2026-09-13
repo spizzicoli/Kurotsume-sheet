@@ -266,6 +266,9 @@ body {
 // -----------------------------------------------------------
 .editable-field {
   cursor: text;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   border-bottom: 1px dashed transparent;
   transition: border-color 0.15s, color 0.15s;
   color: inherit;
@@ -968,6 +971,7 @@ body {
 
   &__name {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1014,6 +1018,7 @@ body {
   &__field {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     gap: 1px;
     font-size: 0.85rem;
   }
@@ -1086,7 +1091,7 @@ body {
 
   &__row {
     display: grid;
-    grid-template-columns: 2fr 0.8fr 0.6fr 0.6fr auto;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 0.8fr) minmax(0, 0.6fr) minmax(0, 0.6fr) auto;
     gap: 8px;
     align-items: center;
     padding: 6px 2px;
@@ -1179,12 +1184,14 @@ body {
 .notes-list__row {
   display: flex;
   align-items: flex-start;
+  min-width: 0;
   gap: 6px;
   padding: 4px 0;
   font-size: 0.92rem;
 }
 
 .notes-list__bullet {
+  flex-shrink: 0;
   color: $blood-bright;
   font-weight: 700;
 }
@@ -1247,8 +1254,40 @@ body {
   }
 
   .inventory-list__row {
-    grid-template-columns: 1.6fr 0.7fr 0.5fr 0.5fr auto;
+    grid-template-columns: minmax(0, 1fr) 48px 42px 48px auto;
     font-size: 0.8rem;
+  }
+
+  .spell-card__head {
+    flex-wrap: wrap;
+  }
+
+  .spell-card__name {
+    flex-basis: calc(100% - 42px);
+  }
+
+  .spell-card__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-list__row > *,
+  .background-panel,
+  .traits-grid__item,
+  .notes-list__row {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .inventory-list__row .MuiInputBase-root,
+  .inventory-list__row .MuiInputBase-input,
+  .inventory-list__row .editable-field,
+  .background-panel .editable-field,
+  .traits-grid__item .editable-field,
+  .notes-list__row .editable-field {
+    min-width: 0 !important;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal !important;
   }
 }
 
