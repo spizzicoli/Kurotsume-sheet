@@ -18,7 +18,7 @@ const id = (p) => `${p}-${++uid}`
 const initialCharacter = {
   info: {
     nome: 'Kurotsume',
-    immagine: '/kurotsume.png',
+    immagine: '/u-piggi.png',
     razza: 'Shadar-Kai (Morte)',
     classi: [
       { nome: 'Guerriero', sottoclasse: 'Maestro di Battaglia', livello: 8 },

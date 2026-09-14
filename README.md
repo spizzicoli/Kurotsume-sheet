@@ -1,4 +1,4 @@
-# Scheda del Personaggio — Kurotsume (D&D 5e) — app iOS + Supabase
+# u-piggi — Scheda del Personaggio (D&D 5e) — app iOS + Supabase
 
 App React + Material UI + SCSS, impacchettata come **app iOS nativa tramite
 Capacitor** (progetto Xcode) e con **tutti i dati salvati su Supabase**

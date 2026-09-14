@@ -1,8 +1,8 @@
 {
-  "appId": "it.kurotsume.schedadnd",
-  "appName": "Kurotsume",
+  "appId": "it.upiggi.schedadnd",
+  "appName": "u-piggi",
   "webDir": "dist",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never"
   }
 }
